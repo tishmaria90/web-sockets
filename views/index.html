@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Chat</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css?family=Exo+2&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+    <div id="chat" class="container grey_background p-4 my-4">
+        <div class="list-group-flush mb-4">
+            <div class="list-group-item" v-for="message in messages">
+                <div class="row">
+                    <div class="col-md-2">{{ message.author.name }}</div>
+                    <div class="col-md-10">{{ message.message }}</div>
+                </div>
+            </div>
+        </div>
+
+        <form action="/message" method="post" @submit="send" class="input-group">
+            <input type="text" class="form-control" placeholder="Type here..." v-model="message">
+            <div class="input-group-append">
+                <button class="btn btn-outline-secondary" type="submit">Send</button>
+            </div>
+        </form>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.10/vue.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.0/axios.min.js"></script>
+
+    <script>
+        var socket = io();
+
+        new Vue({
+            el: '#chat',
+
+            data: {
+                message: '',
+                messages: [],
+                user: {},
+            },
+
+            mounted() {
+                axios.get('/self').then(response => {
+                    this.user = response.data;
+                });
+
+                axios.get('/messages').then(response => {
+                    this.messages = response.data;
+                });
+
+                socket.on('chat.message', (data) => {
+                    this.messages.push(data)
+                });
+            },
+
+            methods: {
+                send: function (e) {
+                    socket.emit('chat.message', { message: this.message, author: this.user });
+                    axios.post('/messages', {message: this.message});
+                    this.message = '';
+
+                    e.preventDefault();
+                }
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,18 @@
+body {
+    font-family: 'Exo 2', sans-serif;
+}
+
+.grey_background {
+    background-color: #f4f4f4;
+    border-radius: 10px;
+}
+
+.list-group-flush {
+    padding-left: 0;
+}
+
+.list-group-item {
+    background-color: transparent;
+}
+
+
