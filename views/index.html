@@ -63,7 +63,6 @@
             methods: {
                 send: function (e) {
                     socket.emit('chat.message', { message: this.message, author: this.user });
-                    axios.post('/messages', {message: this.message});
                     this.message = '';
 
                     e.preventDefault();

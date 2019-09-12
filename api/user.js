@@ -1,4 +1,4 @@
-var User = require('../models/user.js');
+var User = require(__dirname + '/../models/user.js');
 
 exports.store = function (userData) {
     var user = {
